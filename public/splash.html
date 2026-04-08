@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WeFlow</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: transparent;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+      user-select: none;
+      -webkit-app-region: drag;
+    }
+
+    .splash {
+      width: 100%; height: 100%;
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 品牌区 */
+    .brand {
+      padding: 48px 52px 0;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      animation: fadeIn 0.4s ease both;
+    }
+    .logo {
+      width: 56px; height: 56px;
+      border-radius: 14px;
+      flex-shrink: 0;
+    }
+    .app-name {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+    .app-desc {
+      font-size: 12px;
+      margin-top: 5px;
+      opacity: 0.6;
+    }
+
+    .spacer { flex: 1; }
+
+    /* 底部进度区 */
+    .bottom {
+      padding: 0 48px 40px;
+      animation: fadeIn 0.4s ease 0.1s both;
+    }
+
+    /* 进度条轨道 */
+    .progress-track {
+      width: 100%;
+      height: 2px;
+      border-radius: 2px;
+      margin-bottom: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* 进度条填充 */
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 2px;
+      position: relative;
+      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: hidden;
+    }
+
+    /* 扫光：只在有进度时显示，不循环 */
+    .progress-fill::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.5) 50%, transparent 100%);
+      animation: sweep 1.2s ease-out forwards;
+      opacity: 0;
+    }
+
+    /* 等待阶段：进度条末端呼吸光点 */
+    .progress-fill.waiting::before {
+      content: '';
+      position: absolute;
+      top: -1px; right: -2px;
+      width: 6px; height: 4px;
+      border-radius: 50%;
+      background: inherit;
+      filter: blur(2px);
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    .bottom-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .progress-text {
+      font-size: 11px;
+      opacity: 0.38;
+    }
+    .version {
+      font-size: 11px;
+      opacity: 0.25;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes sweep {
+      0%   { opacity: 0; transform: translateX(-100%); }
+      20%  { opacity: 1; }
+      80%  { opacity: 1; }
+      100% { opacity: 0; transform: translateX(100%); }
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; transform: scaleX(1); }
+      50%       { opacity: 1;   transform: scaleX(1.8); }
+    }
+  </style>
+</head>
+<body>
+  <div class="splash" id="splash">
+    <div class="brand">
+      <img class="logo" src="./logo.png" alt="WeFlow" />
+      <div class="brand-text">
+        <div class="app-name" id="appName">WeFlow</div>
+        <div class="app-desc" id="appDesc">微信聊天记录管理工具</div>
+      </div>
+    </div>
+
+    <div class="spacer"></div>
+
+    <div class="bottom">
+      <div class="progress-track" id="progressTrack">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="bottom-row">
+        <div class="progress-text" id="progressText">正在启动...</div>
+        <div class="version" id="versionText"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var themes = {
+      'cloud-dancer': {
+        light: { primary: '#8B7355', bg: '#F0EEE9', bgEnd: '#E5E1DA', text: '#3d3d3d', desc: '#8B7355' },
+        dark:  { primary: '#C9A86C', bg: '#1a1816', bgEnd: '#252220', text: '#F0EEE9', desc: '#C9A86C' }
+      },
+      'corundum-blue': {
+        light: { primary: '#4A6670', bg: '#E8EEF0', bgEnd: '#D8E4E8', text: '#3d3d3d', desc: '#4A6670' },
+        dark:  { primary: '#6A9AAA', bg: '#141a1c', bgEnd: '#1e2a2e', text: '#E0EEF2', desc: '#6A9AAA' }
+      },
+      'kiwi-green': {
+        light: { primary: '#7A9A5C', bg: '#E8F0E4', bgEnd: '#D8E8D2', text: '#3d3d3d', desc: '#7A9A5C' },
+        dark:  { primary: '#9ABA7C', bg: '#161a14', bgEnd: '#222a1e', text: '#E8F0E4', desc: '#9ABA7C' }
+      },
+      'spicy-red': {
+        light: { primary: '#8B4049', bg: '#F0E8E8', bgEnd: '#E8D8D8', text: '#3d3d3d', desc: '#8B4049' },
+        dark:  { primary: '#C06068', bg: '#1a1416', bgEnd: '#261e20', text: '#F2E8EA', desc: '#C06068' }
+      },
+      'teal-water': {
+        light: { primary: '#5A8A8A', bg: '#E4F0F0', bgEnd: '#D2E8E8', text: '#3d3d3d', desc: '#5A8A8A' },
+        dark:  { primary: '#7ABAAA', bg: '#121a1a', bgEnd: '#1a2626', text: '#E0F2EE', desc: '#7ABAAA' }
+      },
+      'blossom-dream': {
+        light: { primary: '#D4849A', primaryEnd: '#D4849A', bg: '#FCF9FB', bgMid: '#F8F2F8', bgEnd: '#F2F6FB', text: '#2E2633', desc: '#D4849A' },
+        dark:  { primary: '#C670C3', primaryEnd: '#8A60C0', bg: '#120B16', bgMid: '#1A1020', bgEnd: '#0E0B18', text: '#F2EAF4', desc: '#C670C3' }
+      }
+    };
+
+    function applyTheme(themeId, mode) {
+      var t = themes[themeId] || themes['cloud-dancer'];
+      var isDark = mode === 'dark';
+      if (mode === 'system') isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var c = isDark ? t.dark : t.light;
+
+      var el = document.getElementById('splash');
+      var fill = document.getElementById('progressFill');
+
+      if (themeId === 'blossom-dream') {
+        if (isDark) {
+          // 深色
+          el.style.background =
+            'radial-gradient(ellipse 60% 50% at 100% 0%, ' + c.primary + '28 0%, transparent 70%), ' +
+            'linear-gradient(150deg, ' + c.bg + ' 0%, ' + c.bgMid + ' 45%, ' + c.bgEnd + ' 100%)';
+        } else {
+          // 浅色
+          el.style.background = 'linear-gradient(150deg, ' + c.bg + ' 0%, ' + c.bgMid + ' 45%, ' + c.bgEnd + ' 100%)';
+        }
+        // 进度条
+        fill.style.background = 'linear-gradient(90deg, ' + c.primary + ' 0%, ' + c.primaryEnd + ' 100%)';
+      } else {
+        if (isDark) {
+          el.style.background =
+            'radial-gradient(ellipse 60% 50% at 100% 0%, ' + c.primary + '22 0%, transparent 70%), ' +
+            'linear-gradient(145deg, ' + c.bg + ' 0%, ' + c.bgEnd + ' 100%)';
+        } else {
+          el.style.background = 'linear-gradient(150deg, ' + c.bg + ' 0%, ' + c.bgEnd + ' 100%)';
+        }
+        fill.style.background = c.primary;
+      }
+
+      document.getElementById('appName').style.color = c.text;
+      document.getElementById('appDesc').style.color = c.desc;
+      document.getElementById('progressText').style.color = c.text;
+      document.getElementById('versionText').style.color = c.text;
+      document.getElementById('progressTrack').style.background = c.primary + (isDark ? '25' : '18');
+    }
+
+    // percent: 实际进度值；waiting: 是否处于等待阶段
+    function updateProgress(percent, text, waiting) {
+      var fill = document.getElementById('progressFill');
+      var label = document.getElementById('progressText');
+
+      if (fill) {
+        fill.style.width = percent + '%';
+        if (waiting) {
+          fill.classList.add('waiting');
+        } else {
+          fill.classList.remove('waiting');
+          // 触发扫光：重置动画
+          fill.style.animation = 'none';
+          fill.offsetHeight;
+          fill.style.animation = '';
+        }
+      }
+      if (label && text) label.textContent = text;
+    }
+
+    function setVersion(ver) {
+      var el = document.getElementById('versionText');
+      if (el) el.textContent = 'v' + ver;
+    }
+
+    applyTheme('cloud-dancer', 'light');
+  </script>
+</body>
+</html>
