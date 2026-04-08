@@ -1,0 +1,123 @@
+.chat-analytics-hub-page {
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+}
+
+.chat-analytics-hub-content {
+  width: min(860px, 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.chat-analytics-hub-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.chat-analytics-hub-content h1 {
+  margin: 20px 0 12px;
+  font-size: 32px;
+  line-height: 1.2;
+  color: var(--text-primary);
+}
+
+.chat-analytics-hub-desc {
+  max-width: 620px;
+  margin: 0 0 32px;
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.chat-analytics-hub-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.chat-analytics-entry-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  gap: 14px;
+  min-height: 260px;
+  padding: 28px;
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  background:
+    linear-gradient(180deg, rgba(7, 193, 96, 0.08) 0%, rgba(7, 193, 96, 0.02) 100%),
+    var(--card-bg);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    border-color: rgba(7, 193, 96, 0.35);
+    box-shadow: 0 20px 36px rgba(7, 193, 96, 0.12);
+  }
+
+  .entry-card-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(7, 193, 96, 0.12);
+    color: #07c160;
+
+    &.group {
+      background: rgba(24, 119, 242, 0.12);
+      color: #1877f2;
+    }
+  }
+
+  .entry-card-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 24px;
+    line-height: 1.2;
+  }
+
+  p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  .entry-card-cta {
+    margin-top: auto;
+    color: var(--primary);
+    font-size: 13px;
+    font-weight: 600;
+  }
+}
+
+@media (max-width: 900px) {
+  .chat-analytics-hub-grid {
+    grid-template-columns: 1fr;
+  }
+}

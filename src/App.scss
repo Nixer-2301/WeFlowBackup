@@ -1,0 +1,375 @@
+.app-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-primary);
+  animation: appFadeIn 0.35s ease-out;
+  position: relative;
+  overflow: hidden;
+}
+
+// 繁花如梦：底色层（::before）+ 光晕层（::after）分离，避免 blur 吃掉边缘
+[data-theme="blossom-dream"] .app-container {
+  background: transparent;
+}
+
+// ::before 纯底色，不模糊
+[data-theme="blossom-dream"] .app-container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -2;
+  background: var(--bg-primary);
+}
+
+// ::after 光晕层，模糊叠加在底色上
+[data-theme="blossom-dream"] .app-container::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse 55% 45% at 15% 20%, var(--blossom-pink) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 40% at 85% 75%, var(--blossom-peach) 0%, transparent 65%),
+    radial-gradient(ellipse 45% 50% at 80% 10%, var(--blossom-blue) 0%, transparent 60%);
+  filter: blur(80px);
+  opacity: 0.75;
+}
+
+// 深色模式光晕更克制
+[data-theme="blossom-dream"][data-mode="dark"] .app-container::after {
+  background:
+    radial-gradient(ellipse 55% 45% at 15% 20%, var(--blossom-pink) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 40% at 85% 75%, var(--blossom-purple) 0%, transparent 65%),
+    radial-gradient(ellipse 45% 50% at 80% 10%, var(--blossom-blue) 0%, transparent 60%);
+  filter: blur(100px);
+  opacity: 0.2;
+}
+
+.window-drag-region {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 150px; // 预留系统最小化/最大化/关闭按钮区域
+  height: 40px;
+  -webkit-app-region: drag;
+  pointer-events: auto;
+  z-index: 2000;
+}
+
+.main-layout {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.content {
+  flex: 1;
+  overflow: auto;
+  padding: 24px;
+  position: relative;
+}
+
+.export-keepalive-page {
+  height: 100%;
+
+  &.hidden {
+    display: none;
+  }
+}
+
+.export-route-anchor {
+  display: none;
+}
+
+@keyframes appFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// 更新提示条
+.update-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 20px;
+  background: var(--primary);
+  color: white;
+  font-size: 14px;
+
+  .update-text {
+    flex: 1;
+    
+    strong {
+      font-weight: 600;
+    }
+  }
+
+  .update-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 14px;
+    border: none;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  }
+
+  .dismiss-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    color: white;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  .update-progress {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 150px;
+
+    .progress-bar {
+      flex: 1;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 3px;
+      overflow: hidden;
+
+      .progress-fill {
+        height: 100%;
+        background: white;
+        border-radius: 3px;
+        transition: width 0.2s ease;
+      }
+    }
+
+    span {
+      font-size: 12px;
+      min-width: 35px;
+    }
+  }
+}
+
+// 用户协议弹窗
+.agreement-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.agreement-modal {
+  width: 520px;
+  max-height: 80vh;
+  background: var(--bg-primary);
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.agreement-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 28px;
+  border-bottom: 1px solid var(--border-color);
+
+  svg {
+    color: var(--primary);
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+}
+
+.agreement-content {
+  flex: 1;
+  padding: 20px 28px;
+  overflow-y: auto;
+
+  > p {
+    margin: 0 0 16px;
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+}
+
+.agreement-notice {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 160, 0, 0.35);
+  background: rgba(255, 160, 0, 0.12);
+  color: var(--text-primary);
+
+  strong {
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  .agreement-notice-link {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  a {
+    font-size: 12px;
+    color: var(--primary);
+    text-decoration: none;
+    word-break: break-all;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.agreement-text {
+  background: var(--bg-secondary);
+  border-radius: 10px;
+  padding: 20px;
+  max-height: 280px;
+  overflow-y: auto;
+
+  h4 {
+    margin: 0 0 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+
+    &:not(:first-child) {
+      margin-top: 16px;
+    }
+  }
+
+  p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 3px;
+  }
+}
+
+.agreement-footer {
+  padding: 20px 28px;
+  border-top: 1px solid var(--border-color);
+}
+
+.agreement-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  cursor: pointer;
+
+  input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary);
+    cursor: pointer;
+  }
+
+  span {
+    font-size: 14px;
+    color: var(--text-primary);
+  }
+}
+
+.agreement-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+
+  .btn {
+    padding: 10px 24px;
+  }
+
+  .btn-secondary {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &:hover {
+      background: var(--border-color);
+    }
+  }
+
+  .btn-primary {
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    &:hover:not(:disabled) {
+      opacity: 0.9;
+    }
+  }
+}

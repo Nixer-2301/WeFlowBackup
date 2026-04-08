@@ -1,0 +1,273 @@
+.annual-report-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  text-align: center;
+  padding: 40px 24px;
+}
+
+.header-icon {
+  color: var(--primary);
+  margin-bottom: 16px;
+}
+
+.page-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 12px;
+}
+
+.page-desc {
+  font-size: 15px;
+  color: var(--text-secondary);
+  margin: 0 0 48px;
+}
+
+.page-desc.load-summary {
+  margin: 0 0 28px;
+}
+
+.page-desc.load-summary.complete {
+  color: var(--text-secondary);
+}
+
+.load-telemetry {
+  width: min(760px, 100%);
+  padding: 12px 14px;
+  margin: 0 0 28px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--border-color) 80%, transparent);
+  background: color-mix(in srgb, var(--card-bg) 92%, transparent);
+  text-align: left;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+
+  p {
+    margin: 4px 0;
+  }
+
+  .label {
+    color: var(--text-tertiary);
+  }
+}
+
+.load-telemetry.loading {
+  border-color: color-mix(in srgb, var(--primary) 30%, var(--border-color));
+}
+
+.load-telemetry.complete {
+  border-color: color-mix(in srgb, var(--primary) 40%, var(--border-color));
+}
+
+.load-telemetry.compact {
+  margin: 12px 0 0;
+  width: min(560px, 100%);
+}
+
+.report-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  width: min(760px, 100%);
+}
+
+.report-section {
+  width: 100%;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 28px;
+  text-align: left;
+}
+
+.section-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.section-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.section-desc {
+  margin: 8px 0 0;
+  font-size: 14px;
+  color: var(--text-tertiary);
+}
+
+.section-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  color: var(--primary);
+  border: 1px solid color-mix(in srgb, var(--primary) 30%, transparent);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.section-hint {
+  margin: 12px 0 0;
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.year-grid-with-status {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.year-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  max-width: 600px;
+  margin-bottom: 48px;
+}
+
+.report-section .year-grid {
+  justify-content: flex-start;
+  max-width: none;
+  margin-bottom: 0;
+}
+
+.year-grid-with-status .year-grid {
+  flex: 1;
+}
+
+.year-load-status {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+
+.year-load-status.complete {
+  color: color-mix(in srgb, var(--primary) 80%, var(--text-secondary));
+}
+
+.dot-ellipsis {
+  display: inline-block;
+  width: 0;
+  overflow: hidden;
+  vertical-align: bottom;
+  animation: dot-ellipsis 1.2s steps(4, end) infinite;
+}
+
+.year-load-status.complete .dot-ellipsis,
+.page-desc.load-summary.complete .dot-ellipsis {
+  animation: none;
+  width: 0;
+}
+
+.year-card {
+  width: 120px;
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--card-bg);
+  border: 2px solid var(--border-color);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  }
+
+  &.selected {
+    border-color: var(--primary);
+    background: var(--primary-light);
+
+    .year-number {
+      color: var(--primary);
+    }
+  }
+
+  .year-number {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1;
+  }
+
+  .year-label {
+    font-size: 14px;
+    color: var(--text-tertiary);
+    margin-top: 4px;
+  }
+}
+
+.generate-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 40px;
+  background: linear-gradient(135deg, var(--primary) 0%, color-mix(in srgb, var(--primary) 80%, #000) 100%);
+  border: none;
+  border-radius: 50px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--primary) 30%, transparent);
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px color-mix(in srgb, var(--primary) 40%, transparent);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &.secondary {
+    background: var(--card-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    box-shadow: none;
+  }
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes dot-ellipsis {
+  to { width: 1.4em; }
+}
